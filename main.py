@@ -324,4 +324,5 @@ async def hat_wobble(ctx: commands.Context, *, arg: str):
     else:
         await ctx.send('Sorry, Paul. That is not a valid command')
 
-bot.run(TOKEN)
+if __name__ == '__main__':
+    bot.run(TOKEN)
