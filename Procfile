@@ -1,1 +1,1 @@
-worker: python3 C:\Users\dcantilo\PycharmProjects\discordbots\main.py
+worker: python3 discord_board_game_setup/main.py
