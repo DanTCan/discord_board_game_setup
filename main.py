@@ -202,8 +202,10 @@ async def setup(ctx: commands.Context):
             except KeyError:
                 await ctx.send('\nInvalid choice!')
 
-    # for p in players_dict.values()
-    # player_list += f'{p.name}'
+    player_list = 'Final Player List:\n'
+    for p in players_dict.values():
+        player_list += f'{p.name}\n'
+    await ctx.send(player_list)
 
     await ctx.send('Do we want to setup roles? [y/n]')
     try:
