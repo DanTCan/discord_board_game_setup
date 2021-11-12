@@ -202,7 +202,7 @@ async def setup(ctx: commands.Context):
             except KeyError:
                 await ctx.send('\nInvalid choice!')
 
-    # for p in players_dict.values()  discord==104597
+    # for p in players_dict.values()
     # player_list += f'{p.name}'
 
     await ctx.send('Do we want to setup roles? [y/n]')
@@ -282,8 +282,11 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.command(name='computer')
-async def hat_wobble(ctx: commands.Context, *, arg: str):
+@bot.command()
+async def computer(ctx: commands.Context, *, arg: str):
+    if ctx.channel.name != 'computer':
+        await ctx.send('Incorrect channel!')
+        return
     arg = arg.translate(str.maketrans('', '', string.punctuation))
     if arg == 'can i see a hat wobble':
         with open(os.path.join('static', 'hat_wobble.gif'), 'rb') as f:
