@@ -1,0 +1,1 @@
+worker: python3 C:\Users\dcantilo\PycharmProjects\discordbots\main.py
