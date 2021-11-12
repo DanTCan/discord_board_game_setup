@@ -192,8 +192,10 @@ async def setup(ctx: commands.Context):
         axed = False
         while not axed:
             await ctx.send('Too many players.  Axe someone! (input player number)\n')
+            chopping_block = ''
             for p in players_dict.keys():
-                await ctx.send(f'{p}) {players_dict[p].name}')
+                chopping_block += f'{p}) {players_dict[p].name}\n'
+            await ctx.send(chopping_block)
             axed = await bot.wait_for('message', check=check_reasonable_int)
             axed = int(axed.content)
             try:
