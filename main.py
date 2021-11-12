@@ -319,6 +319,26 @@ async def hat_wobble(ctx: commands.Context, *, arg: str):
                 with open(os.path.join('static', 'tayne.gif'), 'rb') as f:
                     pic = discord.File(f)
                     await ctx.send(file=pic)
+
+                def check_nude_tayne(msg: discord.Message):
+                    submit = msg.content.lower().strip()
+                    try:
+                        if submit == 'nude tayne':
+                            return True
+                        else:
+                            return False
+                    except TypeError or ValueError:
+                        return False
+                try:
+                    nude = await bot.wait_for('message', check=check_nude_tayne, timeout=15)
+                    if nude:
+                        await ctx.send('WARNING! THIS IS NOT SUITABLE FOR WORK!')
+                        with open(os.path.join('static', 'warning.gif'), 'rb') as f:
+                            pic = discord.File(f)
+                            await ctx.send(file=pic)
+                except TimeoutError:
+                    await ctx.send('Timed Out (you could have seen more...)')
+
         except asyncio.TimeoutError:
             await ctx.send('Timed Out')
     else:
