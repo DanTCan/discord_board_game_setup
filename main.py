@@ -44,6 +44,11 @@ class Game(object):
         self.max_players = int()
 
 
+'''
+Once I'm confident that we are capturing the most essential parameters of a game, we will start saving the game 
+profiles to a json or .txt or something to be retrieved into game cache.... although the cache will have to be 
+fetched routinely... Well we can just refresh it after each full interaction with setup
+'''
 games_cache = []
 game_ids = [gm.game_id for gm in games_cache]
 
