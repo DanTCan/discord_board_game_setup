@@ -9,7 +9,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = os.getenv('SETUP_DISCORD_TOKEN')
+TOKEN = input('enter token')
 
 intents = discord.Intents.default()
 intents.members = True
