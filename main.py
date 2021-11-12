@@ -9,7 +9,7 @@ from discord.ext import commands
 # from dotenv import load_dotenv
 
 # load_dotenv()
-TOKEN = input('enter token')
+# TOKEN = input('enter token')
 
 intents = discord.Intents.default()
 intents.members = True
@@ -325,4 +325,4 @@ async def hat_wobble(ctx: commands.Context, *, arg: str):
         await ctx.send('Sorry, Paul. That is not a valid command')
 
 if __name__ == '__main__':
-    bot.run(TOKEN)
+    bot.run(os.environ['BOT_TOKEN'])
