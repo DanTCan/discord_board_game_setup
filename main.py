@@ -333,7 +333,7 @@ async def hat_wobble(ctx: commands.Context, *, arg: str):
                     nude = await bot.wait_for('message', check=check_nude_tayne, timeout=15)
                     if nude:
                         await ctx.send('WARNING! THIS IS NOT SUITABLE FOR WORK!')
-                        with open(os.path.join('static', 'warning.gif'), 'rb') as f:
+                        with open(os.path.join('static', 'warning.jpg'), 'rb') as f:
                             pic = discord.File(f)
                             await ctx.send(file=pic)
                 except TimeoutError:
