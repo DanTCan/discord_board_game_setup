@@ -286,19 +286,19 @@ async def meow(ctx: commands.Context):
 async def hat_wobble(ctx: commands.Context, *, arg: str):
     arg = arg.translate(str.maketrans('', '', string.punctuation))
     if arg == 'can i see a hat wobble':
-        with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', 'hat_wobble.gif'), 'rb') as f:
+        with open(os.path.join('static', 'hat_wobble.gif'), 'rb') as f:
             pic = discord.File(f)
             await ctx.send(file=pic)
     elif arg == 'kick up the 4d3d3d3':
-        with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', '4d3d3d3.gif'), 'rb') as f:
+        with open(os.path.join('static', '4d3d3d3.gif'), 'rb') as f:
             pic = discord.File(f)
             await ctx.send(file=pic)
     elif arg == 'give me a printout of oyster smiling':
-        with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', 'oyster_smiling.jpeg'), 'rb') as f:
+        with open(os.path.join('static', 'oyster_smiling.jpeg'), 'rb') as f:
             pic = discord.File(f)
             await ctx.send(file=pic)
     elif arg == 'load up celery man please':
-        with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', 'celery_man.gif'), 'rb') as f:
+        with open(os.path.join('static', 'celery_man.gif'), 'rb') as f:
             pic = discord.File(f)
             await ctx.send(file=pic)
 
@@ -316,7 +316,7 @@ async def hat_wobble(ctx: commands.Context, *, arg: str):
         try:
             alright = await bot.wait_for('message', check=check_celery_alright)
             if alright:
-                with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', 'tayne.gif'), 'rb') as f:
+                with open(os.path.join('static', 'tayne.gif'), 'rb') as f:
                     pic = discord.File(f)
                     await ctx.send(file=pic)
         except asyncio.TimeoutError:
