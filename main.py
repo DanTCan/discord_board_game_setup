@@ -6,9 +6,9 @@ import time
 import discord
 import asyncio
 from discord.ext import commands
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 TOKEN = input('enter token')
 
 intents = discord.Intents.default()
