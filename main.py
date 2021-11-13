@@ -286,7 +286,7 @@ async def meow(ctx: commands.Context):
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'meow-talk':
         await ctx.send(f'Do you really think {ctx.channel} is the appropriate place to meow?')
         return
-    with open(os.path.join('C:\\', 'Users', 'dcantilo', 'Pictures', 'crackbrie.jpg'), 'rb') as f:
+    with open(os.path.join('static', 'crackbrie.jpg'), 'rb') as f:
         pic = discord.File(f)
         await ctx.send(file=pic)
 
