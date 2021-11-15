@@ -16,6 +16,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 
 DEMO = Game('DEMO', data.games_cache)
+data.games_cache.remove(DEMO)
 
 
 class Player(object):
@@ -118,7 +119,7 @@ async def setup(ctx: commands.Context):
     this_game = None
     game_select = await bot.wait_for('message', check=check_game_selection, timeout=30)
     game_select = game_select.content
-    if game_select.strip.lower() == 'lib':
+    if game_select.strip().lower() == 'lib':
         game_list = ''
         for g in data.games_cache:
             game_list += f'\n{g.game_id}) {g.title} -- supports {g.min_players}-{g.max_players} players'
