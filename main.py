@@ -102,24 +102,21 @@ async def setup(ctx: commands.Context):
     if new_or_lib == 'lib':
         game_list = ''
         for g in data.games_cache:
-            game_list += f'\n{g.game_id}) {g.title} -- supports {g.min_players}-{g.max_players} players'
+            game_list += f'\n**{g.game_id})** *{g.title}* -- supports {g.min_players}-{g.max_players} players'
         game_list += '\n\n**Enter Game ID (#) to load corresponding profile...**'
         await ctx.send(game_list)
         try:
             selected_id = await bot.wait_for('message', check=check_game_selection, timeout=15)
             selected_id = int(selected_id.content)
             this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
-            # for gm in data.games_cache:
-            #     if gm.game_id == selected_id:
-            #         this_game = gm
-            await ctx.send(f'**Loaded profile for {this_game.title}.**')
+            await ctx.send(f'**Loaded profile for *{this_game.title}*.**')
         except TimeoutError:
             await ctx.send('**Timed Out**')
             return
     elif new_or_lib == 'new':
         await ctx.send('**Woohoo! A new game!  What is its title?**')
         title_input = await bot.wait_for('message')
-        title_input = title_input.content.strip().capitalize()
+        # title_input = title_input.content.strip().capitalize()
         this_game = Game(title_input, data.games_cache)
         await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
         minc = await bot.wait_for('message', check=check_reasonable_int)
