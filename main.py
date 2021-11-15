@@ -107,11 +107,12 @@ async def setup(ctx: commands.Context):
         await ctx.send(game_list)
         try:
             selected_id = await bot.wait_for('message', check=check_game_selection, timeout=15)
-            selected_id = selected_id.content
-            for gm in data.games_cache:
-                if gm.game_id == selected_id:
-                    this_game = gm
-                    await ctx.send(f'**Loaded profile for {this_game.title}.**')
+            selected_id = int(selected_id.content)
+            this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
+            # for gm in data.games_cache:
+            #     if gm.game_id == selected_id:
+            #         this_game = gm
+            await ctx.send(f'**Loaded profile for {this_game.title}.**')
         except TimeoutError:
             await ctx.send('**Timed Out**')
             return
