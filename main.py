@@ -291,12 +291,15 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.command(help='Relive Celery Man\n STOP ALL THE DOWNLOADING!')
+@bot.command(brief='Relive Celery Man',
+             help='Conversation Starters (punctuation/case insensitive):\n- Load up Celery Man\n- Kick up the '
+                  '4D3D3D3\n- Give me a printout of Oyster smiling\n- Can I see a hat wobble?\n- Do we have any new '
+                  'sequences? (this prompt can be followed up with replies to computer: \'alright\' and \'nude tayne\'')
 async def computer(ctx: commands.Context, *, arg: str):
     if ctx.channel.name != 'computer':
         await ctx.send('Incorrect channel!')
         return
-    arg = arg.translate(str.maketrans('', '', string.punctuation))
+    arg = arg.translate(str.maketrans('', '', string.punctuation)).lower()
     if arg == 'can i see a hat wobble':
         with open(os.path.join('static', 'hat_wobble.gif'), 'rb') as f:
             pic = discord.File(f)
