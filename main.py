@@ -69,7 +69,10 @@ async def on_ready():
         print(f'registered on {guild.name}')
 
 
-@bot.command()
+@bot.command(brief='Set up a board game to be played with your friends.',
+             help=f'Each game setup organized through this bot can be saved for reuse.'
+                  f'\nGame profile parameters: {filter(lambda a: not a.startswith("__"), dir(Game(None)))}'
+             )
 async def setup(ctx: commands.Context):
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
@@ -281,7 +284,7 @@ async def setup(ctx: commands.Context):
         return
 
 
-@bot.command()
+@bot.command(brief='Show me your kitties!', help='Cool Shanta Water requires this exchange in #meow-talk')
 async def meow(ctx: commands.Context):
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'meow-talk':
         await ctx.send(f'Do you really think {ctx.channel} is the appropriate place to meow?')
@@ -294,7 +297,8 @@ async def meow(ctx: commands.Context):
 @bot.command(brief='Relive Celery Man',
              help='Conversation Starters (punctuation/case insensitive):\n- Load up Celery Man\n- Kick up the '
                   '4D3D3D3\n- Give me a printout of Oyster smiling\n- Can I see a hat wobble?\n- Do we have any new '
-                  'sequences? (this prompt can be followed up with replies to computer: \'alright\' and \'nude tayne\'')
+                  'sequences? (this prompt can be followed up with replies to computer: \'alright\' and \'nude tayne\')'
+             )
 async def computer(ctx: commands.Context, *, arg: str):
     if ctx.channel.name != 'computer':
         await ctx.send('Incorrect channel!')
