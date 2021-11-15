@@ -361,7 +361,7 @@ async def computer(ctx: commands.Context, *, arg: str):
         except asyncio.TimeoutError:
             await ctx.send('Timed Out')
     else:
-        await ctx.send('Sorry, Paul. That is not a valid command')
+        await ctx.send('Sorry, Paul. That is not a valid command.  Try \'!help\'...')
 
 if __name__ == '__main__':
     bot.run(os.environ['BOT_TOKEN'])
