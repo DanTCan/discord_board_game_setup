@@ -110,6 +110,7 @@ async def setup(ctx: commands.Context):
             for gm in data.games_cache:
                 if gm.game_id == selected_id:
                     this_game = gm
+                    await ctx.send(f'Loaded profile for {this_game.title}.')
         except TimeoutError:
             await ctx.send('Timed Out')
             return
