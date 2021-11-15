@@ -70,12 +70,12 @@ async def on_ready():
 
 
 foo = Game(None)
-params = filter(lambda a: not a.startswith("__"), dir(foo))
+params =
 
 
 @bot.command(brief='Set up a board game to be played with your friends.',
-             help=f'Each game setup organized through this bot can be saved for reuse.'
-                  f'\nGame profile parameters: {params}'
+             help='Each game setup organized through this bot can be saved for reuse.'
+                  '\nGame profile parameters:' + "\n".join(filter(lambda a: not a.startswith("__"), dir(Game(None))))
              )
 async def setup(ctx: commands.Context):
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
