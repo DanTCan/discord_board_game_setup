@@ -35,35 +35,6 @@ class Player(object):
         self.turn = None
 
 
-# class Game(object):
-#     def __init__(self, game_name):
-#         self.title = game_name
-#         self.game_id = int()
-#         self.game_roles = None
-#         self.teams = None
-#         self.times_played = None
-#         self.min_players = int()
-#         self.max_players = int()
-
-
-'''
-Once I'm confident that we are capturing the most essential parameters of a game, we will start saving the game 
-profiles to a json or .txt or something to be retrieved into game cache.... although the cache will have to be 
-fetched routinely... Well we can just refresh it after each full interaction with setup
-'''
-# games_cache = []
-# game_ids = [gm.game_id for gm in games_cache]
-#
-#
-# def new_id():
-#     try:
-#         new = max(game_ids) + 1
-#     except ValueError:
-#         new = 1
-#     game_ids.append(new)
-#     return new
-
-
 @bot.event  # @client.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord')
@@ -98,10 +69,19 @@ async def setup(ctx: commands.Context):
             bad_value = True
         return not bad_value
 
+    def check_new_or_show_lib(msg: discord.Message):
+        try:
+            if msg.content.strip().lower() == 'new' or 'lib':
+                return True
+            else:
+                return False
+        except TypeError or ValueError:
+            return False
+
     def check_game_selection(msg: discord.Message):
         bad_value = False
-        if msg.content.strip().lower() == 'new' or 'lib':
-            return not bad_value
+        # if msg.content.strip().lower() == 'new' or 'lib':
+        #     return not bad_value
         try:
             if int(msg.content) not in [game.game_id for game in data.games_cache]:
                 bad_value = True
@@ -117,9 +97,9 @@ async def setup(ctx: commands.Context):
     await ctx.send(hi)
 
     this_game = None
-    game_select = await bot.wait_for('message', check=check_game_selection, timeout=30)
-    game_select = game_select.content
-    if game_select.strip().lower() == 'lib':
+    new_or_lib = await bot.wait_for('message', check=check_new_or_show_lib, timeout=30)
+    new_or_lib = new_or_lib.content.strip().lower()
+    if new_or_lib == 'lib':
         game_list = ''
         for g in data.games_cache:
             game_list += f'\n{g.game_id}) {g.title} -- supports {g.min_players}-{g.max_players} players'
@@ -133,13 +113,11 @@ async def setup(ctx: commands.Context):
         except TimeoutError:
             await ctx.send('Timed Out')
             return
-
-    elif game_select.strip().lower() == 'new':
+    elif new_or_lib == 'new':
         await ctx.send('Woohoo! A new game!  What is its title?')
         title_input = await bot.wait_for('message')
         title_input = title_input.content.strip().capitalize()
         this_game = Game(title_input, data.games_cache)
-        # this_game.game_id = new_id()
         await ctx.send(f'Minimum player count for {this_game.title}?')
         minc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.min_players = int(minc.content)
@@ -147,10 +125,6 @@ async def setup(ctx: commands.Context):
         maxc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.max_players = int(maxc.content)
         await ctx.send(f'Okay, we will configure more setup parameters for {this_game.title} as we go along.\n\n')
-    # else:
-    #     for g in games_cache:
-    #         if g.game_id == game_select:
-    #             this_game = g
 
     members_list_prompt = f'I have detected the following members of {ctx.guild.name}:'
     member_dict = {}
