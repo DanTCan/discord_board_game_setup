@@ -291,7 +291,7 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.command(help='Relive Celery Man')
+@bot.command(help='Relive Celery Man\n STOP ALL THE DOWNLOADING!')
 async def computer(ctx: commands.Context, *, arg: str):
     if ctx.channel.name != 'computer':
         await ctx.send('Incorrect channel!')
