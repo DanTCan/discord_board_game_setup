@@ -1,20 +1,21 @@
 import os
 import random
 import string
-import time
-
 import discord
 import asyncio
 from discord.ext import commands
-# from dotenv import load_dotenv
 
-# load_dotenv()
-# TOKEN = input('enter token')
+import data.io as data
+from models.game import Game
+
 
 intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
+
+
+DEMO = Game('DEMO', data.games_cache)
 
 
 class Player(object):
@@ -33,15 +34,15 @@ class Player(object):
         self.turn = None
 
 
-class Game(object):
-    def __init__(self, game_name):
-        self.title = game_name
-        self.game_id = int()
-        self.game_roles = None
-        self.teams = None
-        self.times_played = None
-        self.min_players = int()
-        self.max_players = int()
+# class Game(object):
+#     def __init__(self, game_name):
+#         self.title = game_name
+#         self.game_id = int()
+#         self.game_roles = None
+#         self.teams = None
+#         self.times_played = None
+#         self.min_players = int()
+#         self.max_players = int()
 
 
 '''
@@ -49,17 +50,17 @@ Once I'm confident that we are capturing the most essential parameters of a game
 profiles to a json or .txt or something to be retrieved into game cache.... although the cache will have to be 
 fetched routinely... Well we can just refresh it after each full interaction with setup
 '''
-games_cache = []
-game_ids = [gm.game_id for gm in games_cache]
-
-
-def new_id():
-    try:
-        new = max(game_ids) + 1
-    except ValueError:
-        new = 1
-    game_ids.append(new)
-    return new
+# games_cache = []
+# game_ids = [gm.game_id for gm in games_cache]
+#
+#
+# def new_id():
+#     try:
+#         new = max(game_ids) + 1
+#     except ValueError:
+#         new = 1
+#     game_ids.append(new)
+#     return new
 
 
 @bot.event  # @client.event
@@ -71,9 +72,10 @@ async def on_ready():
 
 @bot.command(brief='Set up a board game to be played with your friends.',
              help='Each game setup organized through this bot can be saved for reuse.\nGame profile parameters:\n-' +
-                  "\n-".join(filter(lambda a: not a.startswith("__"), dir(Game(None))))
+                  "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
+
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
     if ctx.author == bot.user:
@@ -97,32 +99,46 @@ async def setup(ctx: commands.Context):
 
     def check_game_selection(msg: discord.Message):
         bad_value = False
-
-        if msg.content.strip().lower() == 'new':
+        if msg.content.strip().lower() == 'new' or 'lib':
             return not bad_value
         try:
-            if int(msg.content) not in game_ids:
+            if int(msg.content) not in [game.game_id for game in data.games_cache]:
                 bad_value = True
         except TypeError or ValueError:
             bad_value = True
         return not bad_value
 
-    hi = f'Let\'s set up a new game!  I have these previously configured games already saved.  If you would like ' \
-         f'to play one of these again, enter the corresponding number.  Otherwise, type [new] to set up a new game...\n'
-    await ctx.send(hi)
+    hi = f'Let\'s set up a game!\n'
+    if len(data.games_cache) > 0:
+        hi += 'Type [lib] to see the library of existing game profiles.\n'
+    hi += 'Type [new] to create a new game profile.'
 
-    for g in games_cache:
-        await ctx.send(f'{g.game_id}) {g.title} -- supports {g.min_players}-{g.max_players} players')
+    await ctx.send(hi)
 
     this_game = None
     game_select = await bot.wait_for('message', check=check_game_selection, timeout=30)
     game_select = game_select.content
-    if game_select.strip().lower() == 'new':
+    if game_select.strip.lower() == 'lib':
+        game_list = ''
+        for g in data.games_cache:
+            game_list += f'\n{g.game_id}) {g.title} -- supports {g.min_players}-{g.max_players} players'
+        game_list += '\n\nEnter Game ID (#) to load corresponding profile...'
+        await ctx.send(game_list)
+        try:
+            selected_id = await bot.wait_for('message', check=check_game_selection, timeout=15)
+            for gm in data.games_cache:
+                if gm.game_id == selected_id:
+                    this_game = gm
+        except TimeoutError:
+            await ctx.send('Timed Out')
+            return
+
+    elif game_select.strip().lower() == 'new':
         await ctx.send('Woohoo! A new game!  What is its title?')
         title_input = await bot.wait_for('message')
         title_input = title_input.content.strip().capitalize()
-        this_game = Game(title_input)
-        this_game.game_id = new_id()
+        this_game = Game(title_input, data.games_cache)
+        # this_game.game_id = new_id()
         await ctx.send(f'Minimum player count for {this_game.title}?')
         minc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.min_players = int(minc.content)
@@ -130,10 +146,10 @@ async def setup(ctx: commands.Context):
         maxc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.max_players = int(maxc.content)
         await ctx.send(f'Okay, we will configure more setup parameters for {this_game.title} as we go along.\n\n')
-    else:
-        for g in games_cache:
-            if g.game_id == game_select:
-                this_game = g
+    # else:
+    #     for g in games_cache:
+    #         if g.game_id == game_select:
+    #             this_game = g
 
     members_list_prompt = f'I have detected the following members of {ctx.guild.name}:'
     member_dict = {}
@@ -279,9 +295,12 @@ async def setup(ctx: commands.Context):
                 await ctx.send('Ok here\'s the breakdown:' + team_assignment_confirmation)
         else:
             await ctx.send('FREE FOR ALL!')
+        this_game.teams = number_of_teams
+
     except asyncio.TimeoutError:
         await ctx.send('Timed Out')
         return
+    data.save()
 
 
 @bot.command(brief='Show me your kitties!', help='Cool Shanta Water requires this exchange in #meow-talk')
