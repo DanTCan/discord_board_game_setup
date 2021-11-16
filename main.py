@@ -67,16 +67,16 @@ async def setup(ctx: commands.Context):
                 bad_value = True
         except TypeError or ValueError:
             bad_value = True
-        return not bad_value
+        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
 
     def check_new_or_show_lib(msg: discord.Message):
+        bad_value = True
         try:
             if msg.content.strip().lower() == 'new' or 'lib':
-                return True
-            else:
-                return False
+                bad_value = False
         except TypeError or ValueError:
-            return False
+            pass
+        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
 
     def check_game_selection(msg: discord.Message):
         bad_value = False
@@ -87,7 +87,7 @@ async def setup(ctx: commands.Context):
                 bad_value = True
         except TypeError or ValueError:
             bad_value = True
-        return not bad_value
+        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
 
     hi = f'**Let\'s set up a game!\n**'
     if len(data.games_cache) > 0:
@@ -318,13 +318,13 @@ async def computer(ctx: commands.Context, *, arg: str):
     elif arg == 'do we have any new sequences':
         def check_celery_alright(msg: discord.Message):
             alright_submit = msg.content.lower().strip()
+            bad_value = True
             try:
                 if alright_submit == 'alright':
-                    return True
-                else:
-                    return False
+                    bad_value = False
             except TypeError or ValueError:
-                return False
+                pass
+            return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
         await ctx.send('**I have a BETA sequence\nI have been working on\nWould you like to see it?**')
         try:
             alright = await bot.wait_for('message', check=check_celery_alright)
@@ -335,13 +335,13 @@ async def computer(ctx: commands.Context, *, arg: str):
 
                 def check_nude_tayne(msg: discord.Message):
                     submit = msg.content.lower().strip()
+                    bad_value = True
                     try:
                         if submit == 'nude tayne':
-                            return True
-                        else:
-                            return False
+                            bad_value = False
                     except TypeError or ValueError:
-                        return False
+                        pass
+                    return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
                 try:
                     nude = await bot.wait_for('message', check=check_nude_tayne, timeout=15)
                     if nude:
