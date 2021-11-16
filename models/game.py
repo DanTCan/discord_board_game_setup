@@ -1,3 +1,7 @@
+
+UNUSED = 'unused'
+
+
 class Game(object):
     def __init__(self, game_name, container):
         title = game_name.title()

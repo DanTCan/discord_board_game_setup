@@ -6,7 +6,7 @@ import asyncio
 from discord.ext import commands
 
 import data.io as data
-from models.game import Game
+from models.game import Game, UNUSED
 
 
 intents = discord.Intents.default()
@@ -17,9 +17,6 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
-
-# TODO: create a variable for Game class attributes intentionally left empty. e.g. No Roles.
-# TODO: check that roles, teams attributes for Game object exist before prompting user to add them
 
 
 class Player(object):
@@ -119,14 +116,16 @@ async def setup(ctx: commands.Context):
     elif new_or_lib == 'new':
         await ctx.send('**Woohoo! A new game!  What is its title?**')
         title_input = await bot.wait_for('message')
-        # title_input = title_input.content.strip().capitalize()
         this_game = Game(title_input.content, data.games_cache)
+
         await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
         minc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.min_players = int(minc.content)
+
         await ctx.send(f'**Maximum player count for *{this_game.title}*?**')
         maxc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.max_players = int(maxc.content)
+
         await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* as we go along.**\n\n')
 
     members_list_prompt = f'**I have detected the following members of *{ctx.guild.name}*:**'
@@ -211,73 +210,77 @@ async def setup(ctx: commands.Context):
         player_list += f'*{p.name}*\n'
     await ctx.send(player_list)
 
-    await ctx.send('**Do we want to setup roles?** *y/n*')
-    try:
-        yn_roles = await bot.wait_for('message', check=check_yn, timeout=15)
-        if yn_roles.content.lower() == 'y':
-            roles_list_confirmation = ''
-            roles_dict = {}
-            await ctx.send('**How many roles?**')
-            number_roles = await bot.wait_for('message', check=check_reasonable_int)
-            for n in range(1, int(number_roles.content) + 1):
-                await ctx.send(f'**Name for Role {n}?**')
-                role_name = await bot.wait_for('message')
-                roles_dict[n] = role_name.content
-                roles_list_confirmation += f'\n**{n})** *{roles_dict[n]}*'
-            roles = list(roles_dict.values())
-            this_game.game_roles = roles
-            await ctx.send('\n\n**Ok I have these roles:**' + roles_list_confirmation +
-                           '\n\n**Would you like to manually assign roles?** *y,n* \n**If no, will be done randomly.**')
-            yn_role_assign = await bot.wait_for('message', check=check_yn)
-            role_assignment_confirmation = ''
-            if yn_role_assign.content.lower() == 'y':
-                await ctx.send('**Okay. Referencing the above list, '
-                               'enter the role number you wish to assign to each player...\n**')
-                for p in players:
-                    await ctx.send(f'**Role number for** *{p.name}*?')
-                    choice = await bot.wait_for('message')
-                    p.game_role = roles_dict[int(choice.content)]
-                    role_assignment_confirmation += f'\n**{p.name}:** *{p.game_role}*'
+    if this_game.game_roles is None:
+        await ctx.send('**Do you want to setup roles?** *y/n*')
+        try:
+            yn_roles = await bot.wait_for('message', check=check_yn, timeout=15)
+            if yn_roles.content.lower() == 'y':
+                roles_list_confirmation = ''
+                roles_dict = {}
+                await ctx.send('**How many roles?**')
+                number_roles = await bot.wait_for('message', check=check_reasonable_int)
+                for n in range(1, int(number_roles.content) + 1):
+                    await ctx.send(f'**Name for Role {n}?**')
+                    role_name = await bot.wait_for('message')
+                    roles_dict[n] = role_name.content
+                    roles_list_confirmation += f'\n**{n})** *{roles_dict[n]}*'
+                roles = list(roles_dict.values())
+                this_game.game_roles = roles
+                await ctx.send('\n\n**Ok I have these roles:**' + roles_list_confirmation +
+                               '\n\n**Would you like to manually assign roles?** *y,n* \n**If no, will be done randomly.**')
+                yn_role_assign = await bot.wait_for('message', check=check_yn)
+                role_assignment_confirmation = ''
+                if yn_role_assign.content.lower() == 'y':
+                    await ctx.send('**Okay. Referencing the above list, '
+                                   'enter the role number you wish to assign to each player...\n**')
+                    for p in players:
+                        await ctx.send(f'**Role number for** *{p.name}*?')
+                        choice = await bot.wait_for('message')
+                        p.game_role = roles_dict[int(choice.content)]
+                        role_assignment_confirmation += f'\n**{p.name}:** *{p.game_role}*'
+                else:
+                    random.shuffle(players)
+                    random.shuffle(roles)
+                    for p in players:
+                        p.game_role = roles.pop()
+                        role_assignment_confirmation += f'\n**{p.name}:** *{p.game_role}*'
+                await ctx.send('**Okay here is the breakdown:**\n' + role_assignment_confirmation)
             else:
-                random.shuffle(players)
-                random.shuffle(roles)
-                for p in players:
-                    p.game_role = roles.pop()
-                    role_assignment_confirmation += f'\n**{p.name}:** *{p.game_role}*'
-            await ctx.send('**Okay here is the breakdown:**\n' + role_assignment_confirmation)
+                this_game.game_roles = UNUSED
+                await ctx.send(f'**Okay profile for *{this_game.title}* does not include any roles.**')
+        except asyncio.TimeoutError:
+            await ctx.send('**Timed Out**')
 
-    except asyncio.TimeoutError:
-        await ctx.send('**Timed Out**')
-
-    await ctx.send('**Is this a team game? *0* for \"No\", or Enter the *#* of Teams.**')
-    try:
-        number_of_teams = await bot.wait_for('message', check=check_reasonable_int, timeout=15)
-        number_of_teams = int(number_of_teams.content)
-        if number_of_teams > 0:
-            await ctx.send(f'**Ok. I have {number_of_teams} teams.  Do we want to evenly distribute players across '
-                           f'teams**? *y/n*')
-            yn = await bot.wait_for('message', check=check_yn)
-            if yn.content.lower() == 'y':
-                teams = {}
-                team_player_count = len(players) // number_of_teams
-                random.shuffle(players)
-                for t in range(number_of_teams):
-                    teams[t+1] = []
-                    for i in range(team_player_count):
-                        teams[t+1].append(players.pop())
-                team_assignment_confirmation = ''
-                for team in teams:
-                    team_assignment_confirmation += f'\n\n**TEAM *{team}*:**'
-                    for player in teams[team]:
-                        team_assignment_confirmation += f'\n*{player}*'
-                await ctx.send('**Ok here\'s the breakdown:**' + team_assignment_confirmation)
-        else:
-            await ctx.send('**FREE FOR ALL!**')
-        this_game.teams = number_of_teams
-
-    except asyncio.TimeoutError:
-        await ctx.send('**Timed Out**')
-        return
+    if this_game.teams is None:
+        await ctx.send('**Is this a team game? *0* for \"No\", or Enter the *#* of Teams.**')
+        try:
+            number_of_teams = await bot.wait_for('message', check=check_reasonable_int, timeout=15)
+            number_of_teams = int(number_of_teams.content)
+            if number_of_teams > 0:
+                await ctx.send(f'**Ok. I have {number_of_teams} teams.  Do we want to evenly distribute players across '
+                               f'teams**? *y/n*')
+                yn = await bot.wait_for('message', check=check_yn)
+                if yn.content.lower() == 'y':
+                    teams = {}
+                    team_player_count = len(players) // number_of_teams
+                    random.shuffle(players)
+                    for t in range(number_of_teams):
+                        teams[t+1] = []
+                        for i in range(team_player_count):
+                            teams[t+1].append(players.pop())
+                    team_assignment_confirmation = ''
+                    for team in teams:
+                        team_assignment_confirmation += f'\n\n**TEAM *{team}*:**'
+                        for player in teams[team]:
+                            team_assignment_confirmation += f'\n*{player}*'
+                    await ctx.send('**Ok here\'s the breakdown:**' + team_assignment_confirmation)
+                this_game.teams = number_of_teams
+            else:
+                await ctx.send(f'**Okay *{this_game.title}* will be saved as free for all.**')
+                this_game.teams = UNUSED
+        except asyncio.TimeoutError:
+            await ctx.send('**Timed Out**')
+            return
     data.save()
 
 
