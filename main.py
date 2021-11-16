@@ -1,23 +1,25 @@
 import os
 import random
 import string
-import discord
-import asyncio
-from discord.ext import commands
-
+# import discord
+# import asyncio
+# from discord.ext import commands
+from core import *
 import data.io as data
 from models.game import Game, UNUSED
 from models.player import Player
 
-
-intents = discord.Intents.default()
-intents.members = True
-intents.presences = True
-bot = commands.Bot(command_prefix='!', intents=intents)
-
+# intents = discord.Intents.default()
+# intents.members = True
+# intents.presences = True
+# bot = commands.Bot(command_prefix='!', intents=intents)
 
 DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
+
+
+def one_author_one_channel(ctx: commands.Context):
+
 
 
 @bot.event  # @client.event
