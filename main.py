@@ -7,6 +7,7 @@ from discord.ext import commands
 
 import data.io as data
 from models.game import Game, UNUSED
+from models.player import Player
 
 
 intents = discord.Intents.default()
@@ -17,22 +18,6 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
-
-
-class Player(object):
-    def __init__(self, member):
-        if type(member) == discord.Member:
-            self.name = member.name  # [:-5]
-            # self.tag_number = member.name[-5:]
-            self.status = member.status
-        else:
-            self.name = member
-            # self.tag_number = None
-            self.status = 'NonDiscordUser'
-
-        self.game_role = None
-        self.team = None
-        self.turn = None
 
 
 @bot.event  # @client.event
@@ -227,7 +212,8 @@ async def setup(ctx: commands.Context):
                 roles = list(roles_dict.values())
                 this_game.game_roles = roles
                 await ctx.send('\n\n**Ok I have these roles:**' + roles_list_confirmation +
-                               '\n\n**Would you like to manually assign roles?** *y,n* \n**If no, will be done randomly.**')
+                               '\n\n**Would you like to manually assign roles?** *y,n* \n'
+                               '**If no, will be done randomly.**')
                 yn_role_assign = await bot.wait_for('message', check=check_yn)
                 role_assignment_confirmation = ''
                 if yn_role_assign.content.lower() == 'y':
