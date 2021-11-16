@@ -18,6 +18,9 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
 
+# TODO: create a variable for Game class attributes intentionally left empty. e.g. No Roles.
+# TODO: check that roles, teams attributes for Game object exist before prompting user to add them
+
 
 class Player(object):
     def __init__(self, member):
