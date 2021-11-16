@@ -117,7 +117,7 @@ async def setup(ctx: commands.Context):
         await ctx.send('**Woohoo! A new game!  What is its title?**')
         title_input = await bot.wait_for('message')
         # title_input = title_input.content.strip().capitalize()
-        this_game = Game(title_input, data.games_cache)
+        this_game = Game(title_input.content, data.games_cache)
         await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
         minc = await bot.wait_for('message', check=check_reasonable_int)
         this_game.min_players = int(minc.content)
