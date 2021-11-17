@@ -1,7 +1,5 @@
 import discord
-import asyncio
 from discord.ext import commands
-import data.io as data
 
 intents = discord.Intents.default()
 intents.members = True

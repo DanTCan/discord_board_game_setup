@@ -1,27 +1,16 @@
-# import asyncio
 import os
 import random
 import string
-# import discord
-# import asyncio
-# from discord.ext import commands
-# import core.core as core
-from core.core import bot, TIMEOUT, commands, data, asyncio, discord
+from core.core import bot, TIMEOUT, commands, discord
 from core import validators
-# import data.io as data
+import asyncio
+import data.io as data
+
 from models.game import Game, UNUSED
 from models.player import Player
 
-# intents = discord.Intents.default()
-# intents.members = True
-# intents.presences = True
-# bot = commands.Bot(command_prefix='!', intents=intents)
-
 DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
-
-
-# def one_author_one_channel(ctx: commands.Context):
 
 
 @bot.event  # @client.event
@@ -36,8 +25,6 @@ async def on_ready():
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
-    # global global_ctx
-    # global_ctx = ctx
 
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
@@ -46,39 +33,6 @@ async def setup(ctx: commands.Context):
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
         await ctx.send('To avoid server clutter, we should probably do this in the appropriate channel...')
         return
-
-    """validation methods (checks)"""
-    # def check_yn(msg: discord.Message):
-    #     return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['y', 'n']
-    #
-    # def check_reasonable_int(msg: discord.Message):
-    #     bad_value = False
-    #     try:
-    #         if not 0 <= int(msg.content) <= 15:
-    #             bad_value = True
-    #     except TypeError or ValueError:
-    #         bad_value = True
-    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
-    #
-    # def check_new_or_show_lib(msg: discord.Message):
-    #     bad_value = True
-    #     try:
-    #         if msg.content.strip().lower() == 'new' or 'lib':
-    #             bad_value = False
-    #     except TypeError or ValueError:
-    #         pass
-    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
-    #
-    # def check_game_selection(msg: discord.Message):
-    #     bad_value = False
-    #     # if msg.content.strip().lower() == 'new' or 'lib':
-    #     #     return not bad_value
-    #     try:
-    #         if int(msg.content) not in [game.game_id for game in data.games_cache]:
-    #             bad_value = True
-    #     except TypeError or ValueError:
-    #         bad_value = True
-    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
 
     hi = f'**Let\'s set up a game!\n**'
     if len(data.games_cache) > 0:
@@ -111,12 +65,12 @@ async def setup(ctx: commands.Context):
             this_game = Game(title_input.content, data.games_cache)
 
             await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
-            minc = await bot.wait_for('message', check=validators.check_reasonable_int)
-            this_game.min_players = int(minc.content)
+            min_count = await bot.wait_for('message', check=validators.check_reasonable_int)
+            this_game.min_players = int(min_count.content)
 
             await ctx.send(f'**Maximum player count for *{this_game.title}*?**')
-            maxc = await bot.wait_for('message', check=validators.check_reasonable_int)
-            this_game.max_players = int(maxc.content)
+            max_count = await bot.wait_for('message', check=validators.check_reasonable_int)
+            this_game.max_players = int(max_count.content)
 
             await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* '
                            f'as we go along.**\n\n')
