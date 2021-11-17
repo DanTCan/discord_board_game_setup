@@ -18,7 +18,7 @@ DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
 
 
-def one_author_one_channel(ctx: commands.Context):
+# def one_author_one_channel(ctx: commands.Context):
 
 
 
