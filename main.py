@@ -84,36 +84,40 @@ async def setup(ctx: commands.Context):
     await ctx.send(hi)
 
     this_game = None
-    new_or_lib = await bot.wait_for('message', check=check_new_or_show_lib, timeout=15)
-    new_or_lib = new_or_lib.content.strip().lower()
-    if new_or_lib == 'lib':
-        game_list = ''
-        for g in data.games_cache:
-            game_list += f'\n**{g.game_id})** *{g.title}* -- supports {g.min_players}-{g.max_players} players'
-        game_list += '\n\n**Enter Game ID (#) to load corresponding profile...**'
-        await ctx.send(game_list)
-        try:
-            selected_id = await bot.wait_for('message', check=check_game_selection, timeout=15)
-            selected_id = int(selected_id.content)
-            this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
-            await ctx.send(f'**Loaded profile for *{this_game.title}*.**')
-        except TimeoutError:
-            await ctx.send('**Timed Out**')
-            return
-    elif new_or_lib == 'new':
-        await ctx.send('**Woohoo! A new game!  What is its title?**')
-        title_input = await bot.wait_for('message')
-        this_game = Game(title_input.content, data.games_cache)
+    try:
+        new_or_lib = await bot.wait_for('message', check=check_new_or_show_lib, timeout=15)
+        new_or_lib = new_or_lib.content.strip().lower()
+        if new_or_lib == 'lib':
+            game_list = ''
+            for g in data.games_cache:
+                game_list += f'\n**{g.game_id})** *{g.title}* -- supports {g.min_players}-{g.max_players} players'
+            game_list += '\n\n**Enter Game ID (#) to load corresponding profile...**'
+            await ctx.send(game_list)
+            try:
+                selected_id = await bot.wait_for('message', check=check_game_selection, timeout=15)
+                selected_id = int(selected_id.content)
+                this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
+                await ctx.send(f'**Loaded profile for *{this_game.title}*.**')
+            except TimeoutError:
+                await ctx.send('**Timed Out**')
+                return
+        elif new_or_lib == 'new':
+            await ctx.send('**Woohoo! A new game!  What is its title?**')
+            title_input = await bot.wait_for('message')
+            this_game = Game(title_input.content, data.games_cache)
 
-        await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
-        minc = await bot.wait_for('message', check=check_reasonable_int)
-        this_game.min_players = int(minc.content)
+            await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
+            minc = await bot.wait_for('message', check=check_reasonable_int)
+            this_game.min_players = int(minc.content)
 
-        await ctx.send(f'**Maximum player count for *{this_game.title}*?**')
-        maxc = await bot.wait_for('message', check=check_reasonable_int)
-        this_game.max_players = int(maxc.content)
+            await ctx.send(f'**Maximum player count for *{this_game.title}*?**')
+            maxc = await bot.wait_for('message', check=check_reasonable_int)
+            this_game.max_players = int(maxc.content)
 
-        await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* as we go along.**\n\n')
+            await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* as we go along.**\n\n')
+    except TimeoutError:
+        await ctx.send('**Timed Out**')
+        return
 
     members_list_prompt = f'**I have detected the following members of *{ctx.guild.name}*:**'
     member_dict = {}
