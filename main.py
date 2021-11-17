@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord
+from core.core import bot, TIMEOUT, commands, discord, context_decorator
 from core import validators
 import asyncio
 import data.io as data
@@ -20,6 +20,7 @@ async def on_ready():
         print(f'registered on {guild.name}')
 
 
+@context_decorator
 @bot.command(brief='Set up a board game to be played with your friends.',
              help='Each game setup organized through this bot can be saved for reuse.\nGame profile parameters:\n-' +
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))

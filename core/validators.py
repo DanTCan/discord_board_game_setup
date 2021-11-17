@@ -1,4 +1,4 @@
-from core.core import discord
+from core.core import discord, global_ctx
 
 
 def check_yn(msg: discord.Message):
