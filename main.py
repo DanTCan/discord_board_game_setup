@@ -18,8 +18,8 @@ async def on_ready():
     for guild in bot.guilds:
         print(f'registered on {guild.name}')
 
-
-@context_decorator
+# TODO: STILL NEED TO FIGURE OUT HOW TO PASS CONTEXT GLOBALLY TO VALIDATORS!
+# @context_decorator
 @bot.command(brief='Set up a board game to be played with your friends.',
              help='Each game setup organized through this bot can be saved for reuse.\nGame profile parameters:\n-' +
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
