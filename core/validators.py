@@ -1,5 +1,7 @@
 from core.core import discord, global_ctx
 
+print('TEST2', global_ctx, type(global_ctx))
+
 
 def check_yn(msg: discord.Message):
     return msg.author == global_ctx.author and msg.channel == global_ctx.channel and msg.content.lower() in ['y', 'n']
@@ -17,6 +19,7 @@ def check_reasonable_int(msg: discord.Message):
 
 def check_new_or_show_lib(msg: discord.Message):
     bad_value = True
+    print('TEST3', global_ctx, type(global_ctx))
     try:
         if msg.content.strip().lower() == 'new' or 'lib':
             bad_value = False
