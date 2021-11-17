@@ -9,8 +9,7 @@ intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 TIMEOUT = '**Timed Out**'
 
-global_ctx = None
-
+global_ctx = commands.Context
 """validation methods (checks)"""
 
 
@@ -40,8 +39,6 @@ def check_new_or_show_lib(msg: discord.Message):
 
 def check_game_selection(msg: discord.Message):
     bad_value = False
-    # if msg.content.strip().lower() == 'new' or 'lib':
-    #     return not bad_value
     try:
         if int(msg.content) not in [game.game_id for game in data.games_cache]:
             bad_value = True
