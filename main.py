@@ -2,7 +2,6 @@ import os
 import random
 import string
 from core.core import bot, TIMEOUT, commands, discord, context_decorator
-from core import validators
 import asyncio
 import data.io as data
 
@@ -26,6 +25,7 @@ async def on_ready():
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
+    from core import validators
 
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
