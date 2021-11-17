@@ -1,3 +1,4 @@
+# import asyncio
 import os
 import random
 import string
@@ -19,7 +20,6 @@ data.games_cache.remove(DEMO)
 
 
 # def one_author_one_channel(ctx: commands.Context):
-
 
 
 @bot.event  # @client.event
@@ -98,8 +98,8 @@ async def setup(ctx: commands.Context):
                 selected_id = int(selected_id.content)
                 this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
                 await ctx.send(f'**Loaded profile for *{this_game.title}*.**')
-            except TimeoutError:
-                await ctx.send('**Timed Out**')
+            except asyncio.TimeoutError:
+                await ctx.send(TIMEOUT)
                 return
         elif new_or_lib == 'new':
             await ctx.send('**Woohoo! A new game!  What is its title?**')
@@ -114,9 +114,10 @@ async def setup(ctx: commands.Context):
             maxc = await bot.wait_for('message', check=check_reasonable_int)
             this_game.max_players = int(maxc.content)
 
-            await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* as we go along.**\n\n')
-    except TimeoutError:
-        await ctx.send('**Timed Out**')
+            await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* '
+                           f'as we go along.**\n\n')
+    except asyncio.TimeoutError:
+        await ctx.send(TIMEOUT)
         return
 
     members_list_prompt = f'**I have detected the following members of *{ctx.guild.name}*:**'
@@ -152,7 +153,7 @@ async def setup(ctx: commands.Context):
             players.append(p)  # creating instances of class Player for each selected member
             selected_confirmation += f'*{p.name}*\n'
     except asyncio.TimeoutError:
-        await ctx.send('**Timed Out**')
+        await ctx.send(TIMEOUT)
         return
     await ctx.send(selected_confirmation)
     if not len(players) >= this_game.max_players:
@@ -173,7 +174,7 @@ async def setup(ctx: commands.Context):
                     added_players_confirmation += f'\n*{p.name}*'
                 await ctx.send('**Updated Player List:**' + added_players_confirmation)
         except asyncio.TimeoutError:
-            await ctx.send('**Timed Out**')
+            await ctx.send(TIMEOUT)
             return
 
     players_dict = {}
@@ -241,7 +242,7 @@ async def setup(ctx: commands.Context):
                 this_game.game_roles = UNUSED
                 await ctx.send(f'**Okay profile for *{this_game.title}* does not include any roles.**')
         except asyncio.TimeoutError:
-            await ctx.send('**Timed Out**')
+            await ctx.send(TIMEOUT)
 
     if this_game.teams is None:
         await ctx.send('**Is this a team game? *0* for \"No\", or Enter the *#* of Teams.**')
@@ -271,7 +272,7 @@ async def setup(ctx: commands.Context):
                 await ctx.send(f'**Okay *{this_game.title}* will be saved as free for all.**')
                 this_game.teams = UNUSED
         except asyncio.TimeoutError:
-            await ctx.send('**Timed Out**')
+            await ctx.send(TIMEOUT)
             return
     data.save()
 
