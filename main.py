@@ -5,8 +5,9 @@ import string
 # import discord
 # import asyncio
 # from discord.ext import commands
-from core import *
-import data.io as data
+# import core.core as core
+from core.core import *
+# import data.io as data
 from models.game import Game, UNUSED
 from models.player import Player
 
@@ -34,6 +35,8 @@ async def on_ready():
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
+    global global_ctx
+    global_ctx = ctx
 
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
@@ -44,37 +47,37 @@ async def setup(ctx: commands.Context):
         return
 
     """validation methods (checks)"""
-    def check_yn(msg: discord.Message):
-        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['y', 'n']
-
-    def check_reasonable_int(msg: discord.Message):
-        bad_value = False
-        try:
-            if not 0 <= int(msg.content) <= 15:
-                bad_value = True
-        except TypeError or ValueError:
-            bad_value = True
-        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
-
-    def check_new_or_show_lib(msg: discord.Message):
-        bad_value = True
-        try:
-            if msg.content.strip().lower() == 'new' or 'lib':
-                bad_value = False
-        except TypeError or ValueError:
-            pass
-        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
-
-    def check_game_selection(msg: discord.Message):
-        bad_value = False
-        # if msg.content.strip().lower() == 'new' or 'lib':
-        #     return not bad_value
-        try:
-            if int(msg.content) not in [game.game_id for game in data.games_cache]:
-                bad_value = True
-        except TypeError or ValueError:
-            bad_value = True
-        return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
+    # def check_yn(msg: discord.Message):
+    #     return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['y', 'n']
+    #
+    # def check_reasonable_int(msg: discord.Message):
+    #     bad_value = False
+    #     try:
+    #         if not 0 <= int(msg.content) <= 15:
+    #             bad_value = True
+    #     except TypeError or ValueError:
+    #         bad_value = True
+    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
+    #
+    # def check_new_or_show_lib(msg: discord.Message):
+    #     bad_value = True
+    #     try:
+    #         if msg.content.strip().lower() == 'new' or 'lib':
+    #             bad_value = False
+    #     except TypeError or ValueError:
+    #         pass
+    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
+    #
+    # def check_game_selection(msg: discord.Message):
+    #     bad_value = False
+    #     # if msg.content.strip().lower() == 'new' or 'lib':
+    #     #     return not bad_value
+    #     try:
+    #         if int(msg.content) not in [game.game_id for game in data.games_cache]:
+    #             bad_value = True
+    #     except TypeError or ValueError:
+    #         bad_value = True
+    #     return msg.author == ctx.author and msg.channel == ctx.channel and not bad_value
 
     hi = f'**Let\'s set up a game!\n**'
     if len(data.games_cache) > 0:
