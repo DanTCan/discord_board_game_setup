@@ -1,7 +1,5 @@
 from core.core import discord, global_ctx
 
-print('TEST2', global_ctx, type(global_ctx))
-
 
 def check_yn(msg: discord.Message):
     return msg.author == global_ctx.author and msg.channel == global_ctx.channel and msg.content.lower() in ['y', 'n']

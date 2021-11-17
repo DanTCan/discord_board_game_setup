@@ -7,8 +7,7 @@ intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 TIMEOUT = '**Timed Out**'
 
-global_ctx = commands.Context
-print('TEST1', global_ctx, type(global_ctx))
+global_ctx = None
 
 
 def context_decorator(function):
