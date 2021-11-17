@@ -29,6 +29,7 @@ async def setup(ctx: commands.Context):
 
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
+
     if ctx.author == bot.user:
         return
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
