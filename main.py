@@ -46,7 +46,7 @@ async def setup(ctx: commands.Context):
         outgoing.append(rtn)
 
     def send():
-        await ctx.send(''.join(self.outgoing))
+        await ctx.send(''.join(outgoing))
         outgoing.clear()
     
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
