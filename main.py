@@ -13,10 +13,6 @@ DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
 
 
-class Console:
-
-
-
 @bot.event  # @client.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord')
