@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord
+from core.core import bot, TIMEOUT, commands, discord, Console
 from core.validators import ContentValidator
 import asyncio
 import data.io as data
@@ -25,49 +25,27 @@ async def on_ready():
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
-    outgoing = list()
-
-    async def read(validator=None, timeout=None):
-        rtn = await bot.wait_for('message', check=validator, timeout=timeout)
-        return rtn.content
-
-    async def add(var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
-        rtn = f'**{var}**\n'
-        if italic:
-            rtn.replace('**', '***')
-        if not bold:
-            rtn.replace('**', '')
-        if not newline:
-            rtn.replace('\n', '')
-        if bullet:
-            rtn = '**•** ' + rtn
-        if numeric:
-            rtn = f'**{numeric})** ' + rtn
-        outgoing.append(rtn)
-
-    async def send():
-        await ctx.send(''.join(outgoing))
-        outgoing.clear()
-
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
     check = ContentValidator(ctx)
+    console = Console(console_bot=bot, ctx=ctx)
     if ctx.author == bot.user:
         return
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
         await ctx.send('To avoid server clutter, we should probably do this in the appropriate channel...')
         return
 
-    outgoing.append('Let\'s set up a game!')
+    console.add('Let\'s set up a game!')
     if len(data.games_cache) > 0:
-        outgoing.append('Type *lib* to see the library of existing game profiles.')
-    outgoing.append('Type *new* to create a new game profile.')
-    await send()
+        console.add('Type *lib* to see the library of existing game profiles.')
+    console.add('Type *new* to create a new game profile.')
+    await console.send()
 
     this_game = None
     try:
-        new_or_lib = await bot.wait_for('message', check=check.new_or_show_lib, timeout=15)
-        new_or_lib = new_or_lib.content.strip().lower()
+        # new_or_lib = await bot.wait_for('message', check=check.new_or_show_lib, timeout=15)
+        # new_or_lib = new_or_lib.content.strip().lower()
+        new_or_lib = console.read(check=check.new_or_show_lib, timeout=15).strip().lower()
         if new_or_lib == 'lib':
             game_list = ''
             for g in data.games_cache:
