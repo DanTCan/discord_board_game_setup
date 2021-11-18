@@ -25,44 +25,44 @@ async def on_ready():
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
-    # outgoing = list()
-    #
-    # async def read(validator=None, timeout=None):
-    #     rtn = await bot.wait_for('message', check=validator, timeout=timeout)
-    #     return rtn.content
-    #
-    # async def add(var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
-    #     rtn = f'**{var}**\n'
-    #     if italic:
-    #         rtn.replace('**', '***')
-    #     if not bold:
-    #         rtn.replace('**', '')
-    #     if not newline:
-    #         rtn.replace('\n', '')
-    #     if bullet:
-    #         rtn = '**•** ' + rtn
-    #     if numeric:
-    #         rtn = f'**{numeric})** ' + rtn
-    #     outgoing.append(rtn)
-    #
-    # async def send():
-    #     await ctx.send(''.join(outgoing))
-    #     outgoing.clear()
-    #
-    # """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
-    # Making sure messages are in appropriate channel, ignoring bot"""
-    # check = ContentValidator(ctx)
-    # if ctx.author == bot.user:
-    #     return
-    # if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
-    #     await ctx.send('To avoid server clutter, we should probably do this in the appropriate channel...')
-    #     return
-    #
-    # outgoing.append('Let\'s set up a game!')
-    # if len(data.games_cache) > 0:
-    #     outgoing.append('Type *lib* to see the library of existing game profiles.')
-    # outgoing.append('Type *new* to create a new game profile.')
-    # await send()
+    outgoing = list()
+
+    async def read(validator=None, timeout=None):
+        rtn = await bot.wait_for('message', check=validator, timeout=timeout)
+        return rtn.content
+
+    async def add(var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
+        rtn = f'**{var}**\n'
+        if italic:
+            rtn.replace('**', '***')
+        if not bold:
+            rtn.replace('**', '')
+        if not newline:
+            rtn.replace('\n', '')
+        if bullet:
+            rtn = '**•** ' + rtn
+        if numeric:
+            rtn = f'**{numeric})** ' + rtn
+        outgoing.append(rtn)
+
+    async def send():
+        await ctx.send(''.join(outgoing))
+        outgoing.clear()
+
+    """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
+    Making sure messages are in appropriate channel, ignoring bot"""
+    check = ContentValidator(ctx)
+    if ctx.author == bot.user:
+        return
+    if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
+        await ctx.send('To avoid server clutter, we should probably do this in the appropriate channel...')
+        return
+
+    outgoing.append('Let\'s set up a game!')
+    if len(data.games_cache) > 0:
+        outgoing.append('Type *lib* to see the library of existing game profiles.')
+    outgoing.append('Type *new* to create a new game profile.')
+    await send()
 
     this_game = None
     try:
