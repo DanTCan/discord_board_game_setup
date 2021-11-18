@@ -19,12 +19,6 @@ async def on_ready():
     for guild in bot.guilds:
         print(f'registered on {guild.name}')
 
-# TODO: STILL NEED TO FIGURE OUT HOW TO PASS CONTEXT GLOBALLY TO VALIDATORS!
-'''
-or for this ^ I am thinking that the methods in core.validators should only be concerned with content ('message')
-and then we need a separate validator/global check defined here that is only concerned with context ('ctx') 
-'''
-
 
 @bot.command(brief='Set up a board game to be played with your friends.',
              help='Each game setup organized through this bot can be saved for reuse.\nGame profile parameters:\n-' +
