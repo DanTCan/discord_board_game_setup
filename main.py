@@ -13,6 +13,10 @@ DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
 
 
+class Console:
+
+
+
 @bot.event  # @client.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord')
@@ -27,11 +31,11 @@ async def on_ready():
 async def setup(ctx: commands.Context):
     outgoing = list()
 
-    def read(validator=None, timeout=None):
+    async def read(validator=None, timeout=None):
         rtn = await bot.wait_for('message', check=validator, timeout=timeout)
         return rtn.content
 
-    def add(var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
+    async def add(var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
         rtn = f'**{var}**\n'
         if italic:
             rtn.replace('**', '***')
@@ -45,7 +49,7 @@ async def setup(ctx: commands.Context):
             rtn = f'**{numeric})** ' + rtn
         outgoing.append(rtn)
 
-    def send():
+    async def send():
         await ctx.send(''.join(outgoing))
         outgoing.clear()
     
@@ -62,7 +66,7 @@ async def setup(ctx: commands.Context):
     if len(data.games_cache) > 0:
         outgoing.append('Type *lib* to see the library of existing game profiles.')
     outgoing.append('Type *new* to create a new game profile.')
-    send()
+    await send()
 
     this_game = None
     try:
