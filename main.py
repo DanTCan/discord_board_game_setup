@@ -1,8 +1,8 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, context_decorator
-import core.validators as validators
+from core.core import bot, TIMEOUT, commands, discord
+from core.validators import ContentValidator
 import asyncio
 import data.io as data
 
@@ -26,15 +26,15 @@ and then we need a separate validator/global check defined here that is only con
 '''
 
 
-# @context_decorator
 @bot.command(brief='Set up a board game to be played with your friends.',
              help='Each game setup organized through this bot can be saved for reuse.\nGame profile parameters:\n-' +
                   "\n-".join(filter(lambda a: not a.startswith("__"), dir(DEMO)))
              )
 async def setup(ctx: commands.Context):
+    
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
-
+    check = ContentValidator(ctx)
     if ctx.author == bot.user:
         return
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
@@ -50,7 +50,7 @@ async def setup(ctx: commands.Context):
 
     this_game = None
     try:
-        new_or_lib = await bot.wait_for('message', check=validators.check_new_or_show_lib, timeout=15)
+        new_or_lib = await bot.wait_for('message', check=check.new_or_show_lib, timeout=15)
         new_or_lib = new_or_lib.content.strip().lower()
         if new_or_lib == 'lib':
             game_list = ''
@@ -59,7 +59,7 @@ async def setup(ctx: commands.Context):
             game_list += '\n\n**Enter Game ID (#) to load corresponding profile...**'
             await ctx.send(game_list)
             try:
-                selected_id = await bot.wait_for('message', check=validators.check_game_selection, timeout=15)
+                selected_id = await bot.wait_for('message', check=check.game_selection, timeout=15)
                 selected_id = int(selected_id.content)
                 this_game = [gm for gm in data.games_cache if gm.game_id == selected_id][0]
                 await ctx.send(f'**Loaded profile for *{this_game.title}*.**')
@@ -72,11 +72,11 @@ async def setup(ctx: commands.Context):
             this_game = Game(title_input.content, data.games_cache)
 
             await ctx.send(f'**Minimum player count for *{this_game.title}*?**')
-            min_count = await bot.wait_for('message', check=validators.check_reasonable_int)
+            min_count = await bot.wait_for('message', check=check.reasonable_int)
             this_game.min_players = int(min_count.content)
 
             await ctx.send(f'**Maximum player count for *{this_game.title}*?**')
-            max_count = await bot.wait_for('message', check=validators.check_reasonable_int)
+            max_count = await bot.wait_for('message', check=check.reasonable_int)
             this_game.max_players = int(max_count.content)
 
             await ctx.send(f'**Okay, we will configure more setup parameters for *{this_game.title}* '
@@ -124,10 +124,10 @@ async def setup(ctx: commands.Context):
     if not len(players) >= this_game.max_players:
         await ctx.send(f'\n\n**Would you like to add any other players?**  *y/n*')
         try:
-            add_players_yn = await bot.wait_for('message', check=validators.check_yn, timeout=15)
+            add_players_yn = await bot.wait_for('message', check=check.yn, timeout=15)
             if add_players_yn.content.lower() == 'y':
                 await ctx.send('\n**How many more players would you like to add?**')
-                extra_player_count = await bot.wait_for('message', check=validators.check_reasonable_int)
+                extra_player_count = await bot.wait_for('message', check=check.reasonable_int)
                 extra_player_count = int(extra_player_count.content)
                 added_players_confirmation = ''
                 for c in range(extra_player_count):
@@ -154,7 +154,7 @@ async def setup(ctx: commands.Context):
             for p in players_dict.keys():
                 chopping_block += f'**{p})** *{players_dict[p].name}*\n'
             await ctx.send(chopping_block)
-            axed = await bot.wait_for('message', check=validators.check_reasonable_int)
+            axed = await bot.wait_for('message', check=check.reasonable_int)
             axed = int(axed.content)
             try:
                 players_dict.pop(axed)
@@ -170,12 +170,12 @@ async def setup(ctx: commands.Context):
     if this_game.game_roles is None:
         await ctx.send('**Do you want to setup roles?** *y/n*')
         try:
-            yn_roles = await bot.wait_for('message', check=validators.check_yn, timeout=15)
+            yn_roles = await bot.wait_for('message', check=check.yn, timeout=15)
             if yn_roles.content.lower() == 'y':
                 roles_list_confirmation = ''
                 roles_dict = {}
                 await ctx.send('**How many roles?**')
-                number_roles = await bot.wait_for('message', check=validators.check_reasonable_int)
+                number_roles = await bot.wait_for('message', check=check.reasonable_int)
                 for n in range(1, int(number_roles.content) + 1):
                     await ctx.send(f'**Name for Role {n}?**')
                     role_name = await bot.wait_for('message')
@@ -186,7 +186,7 @@ async def setup(ctx: commands.Context):
                 await ctx.send('\n\n**Ok I have these roles:**' + roles_list_confirmation +
                                '\n\n**Would you like to manually assign roles?** *y,n* \n'
                                '**If no, will be done randomly.**')
-                yn_role_assign = await bot.wait_for('message', check=validators.check_yn)
+                yn_role_assign = await bot.wait_for('message', check=check.yn)
                 role_assignment_confirmation = ''
                 if yn_role_assign.content.lower() == 'y':
                     await ctx.send('**Okay. Referencing the above list, '
@@ -212,12 +212,12 @@ async def setup(ctx: commands.Context):
     if this_game.teams is None:
         await ctx.send('**Is this a team game? *0* for \"No\", or Enter the *#* of Teams.**')
         try:
-            number_of_teams = await bot.wait_for('message', check=validators.check_reasonable_int, timeout=15)
+            number_of_teams = await bot.wait_for('message', check=check.reasonable_int, timeout=15)
             number_of_teams = int(number_of_teams.content)
             if number_of_teams > 0:
                 await ctx.send(f'**Ok. I have {number_of_teams} teams.  Do we want to evenly distribute players across '
                                f'teams**? *y/n*')
-                yn = await bot.wait_for('message', check=validators.check_yn)
+                yn = await bot.wait_for('message', check=check.yn)
                 if yn.content.lower() == 'y':
                     teams = {}
                     team_player_count = len(players) // number_of_teams
@@ -317,7 +317,7 @@ async def computer(ctx: commands.Context, *, arg: str):
                     await ctx.send('**Timed Out (you could have seen more...)**')
 
         except asyncio.TimeoutError:
-            await ctx.send('*8Timed Out**')
+            await ctx.send(TIMEOUT)
     else:
         await ctx.send('**Sorry, Paul. That is not a valid command.  Try *!help*...**')
 

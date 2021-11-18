@@ -1,36 +1,37 @@
-from core.core import discord, global_ctx
+from core.core import discord, commands
 
 
-def check_yn(msg: discord.Message):
-    return msg.author == global_ctx.author and msg.channel == global_ctx.channel and msg.content.lower() in ['y', 'n']
+class ContentValidator:
+    def __init__(self, ctx: commands.Context):
+        self.ctx = ctx
 
+    def yn(self, msg: discord.Message):
+        return msg.author == self.ctx.author and msg.channel == self.ctx.channel and msg.content.lower() in ['y', 'n']
 
-def check_reasonable_int(msg: discord.Message):
-    bad_value = False
-    try:
-        if not 0 <= int(msg.content) <= 15:
+    def reasonable_int(self, msg: discord.Message):
+        bad_value = False
+        try:
+            if not 0 <= int(msg.content) <= 15:
+                bad_value = True
+        except TypeError or ValueError:
             bad_value = True
-    except TypeError or ValueError:
+        return msg.author == self.ctx.author and msg.channel == self.ctx.channel and not bad_value
+    
+    def new_or_show_lib(self, msg: discord.Message):
         bad_value = True
-    return msg.author == global_ctx.author and msg.channel == global_ctx.channel and not bad_value
-
-
-def check_new_or_show_lib(msg: discord.Message):
-    bad_value = True
-    print('TEST3', global_ctx, type(global_ctx))
-    try:
-        if msg.content.strip().lower() == 'new' or 'lib':
-            bad_value = False
-    except TypeError or ValueError:
-        pass
-    return msg.author == global_ctx.author and msg.channel == global_ctx.channel and not bad_value
-
-
-def check_game_selection(msg: discord.Message):
-    bad_value = False
-    try:
-        if int(msg.content) not in [game.game_id for game in data.games_cache]:
+        print('TEST3', self.ctx, type(self.ctx))
+        try:
+            if msg.content.strip().lower() == 'new' or 'lib':
+                bad_value = False
+        except TypeError or ValueError:
+            pass
+        return msg.author == self.ctx.author and msg.channel == self.ctx.channel and not bad_value
+    
+    def game_selection(self, msg: discord.Message):
+        bad_value = False
+        try:
+            if int(msg.content) not in [game.game_id for game in data.games_cache]:
+                bad_value = True
+        except TypeError or ValueError:
             bad_value = True
-    except TypeError or ValueError:
-        bad_value = True
-    return msg.author == global_ctx.author and msg.channel == global_ctx.channel and not bad_value
+        return msg.author == self.ctx.author and msg.channel == self.ctx.channel and not bad_value
