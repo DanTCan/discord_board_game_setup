@@ -14,14 +14,14 @@ data.games_cache.remove(DEMO)
 
 
 class Console:
-    def __init__(self, tbot: commands.Bot, ctx: commands.Context):
-        self.tbot = tbot
+    def __init__(self, a_bot: commands.Bot, ctx: commands.Context):
+        self.a_bot = a_bot
         self.ctx = ctx
         self.outgoing = list()
         self.incoming: discord.Message
 
     def read(self, check=None, timeout=None):
-        rtn = await self.tbot.wait_for('message', check=check, timeout=timeout)
+        rtn = await self.a_bot.wait_for('message', check=check, timeout=timeout)
         return rtn.content
 
     def add(self, var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
