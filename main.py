@@ -13,6 +13,36 @@ DEMO = Game('DEMO', data.games_cache)
 data.games_cache.remove(DEMO)
 
 
+class Console:
+    def __init__(self, tbot: commands.Bot, ctx: commands.Context):
+        self.tbot = tbot
+        self.ctx = ctx
+        self.outgoing = list()
+        self.incoming: discord.Message
+
+    def read(self, check=None, timeout=None):
+        rtn = await self.tbot.wait_for('message', check=check, timeout=timeout)
+        return rtn.content
+
+    def add(self, var: str, bold=True, newline=True, italic=False, bullet=False, numeric=None):
+        rtn = f'**{var}**\n'
+        if italic:
+            rtn.replace('**', '***')
+        if not bold:
+            rtn.replace('**', '')
+        if not newline:
+            rtn.replace('\n', '')
+        if bullet:
+            rtn = '**•** ' + rtn
+        if numeric:
+            rtn = f'**{numeric})** ' + rtn
+        self.outgoing.append(rtn)
+
+    def send(self):
+        await self.ctx.send(''.join(self.outgoing))
+        self.outgoing.clear()
+
+
 @bot.event  # @client.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord')
@@ -29,18 +59,18 @@ async def setup(ctx: commands.Context):
     """THIS IS THE 'MAIN LOOP' - triggered by typing !setup in Discord.
     Making sure messages are in appropriate channel, ignoring bot"""
     check = ContentValidator(ctx)
+    console = Console(bot, ctx)
     if ctx.author == bot.user:
         return
     if ctx.guild.name == 'Cool Shanta Water' and ctx.channel.name != 'boardgames':
         await ctx.send('To avoid server clutter, we should probably do this in the appropriate channel...')
         return
 
-    hi = f'**Let\'s set up a game!\n**'
+    console.add('Let\'s set up a game!')
     if len(data.games_cache) > 0:
-        hi += 'Type *lib* to see the library of existing game profiles.\n'
-    hi += 'Type *new* to create a new game profile.'
-
-    await ctx.send(hi)
+        console.add('Type *lib* to see the library of existing game profiles.')
+    console.add('Type *new* to create a new game profile.')
+    console.send()
 
     this_game = None
     try:
