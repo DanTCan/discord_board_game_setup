@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, Console  # , client
+from core.core import bot, TIMEOUT, commands, discord, Console, pytesseract  # , client
 from core.validators import ContentValidator
 import asyncio
 import data.io as data
@@ -259,6 +259,15 @@ async def on_message(msg: discord.Message):
     for m in msg.attachments:
         out.append(m)
     await msg.channel.send(out)
+    try:
+        # img_url
+        await msg.channel.send(pytesseract.image_to_string(msg.attachments[0]))
+        # print(pytesseract.image_to_string('test.jpg', timeout=15))  # Timeout after 2 seconds
+        # print(pytesseract.image_to_string('test.jpg', timeout=0.5))  # Timeout after half a second
+    except RuntimeError as timeout_error:
+        # Tesseract processing is terminated
+        await msg.channel.send(f'error processing: {msg.content}')
+        # pass
     # except:
     #     return
 
