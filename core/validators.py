@@ -5,6 +5,9 @@ class ContentValidator:
     def __init__(self, ctx: commands.Context):
         self.ctx = ctx
 
+    def hs_auth(self, msg: discord.Message):
+        return msg.author == self.ctx.author and msg.guild.name == 'HSITtesting' and msg.channel == 'restocks'
+
     def yn(self, msg: discord.Message):
         return msg.author == self.ctx.author and msg.channel == self.ctx.channel and msg.content.lower() in ['y', 'n']
 

@@ -1,7 +1,8 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, Console, pytesseract, Image  # , client
+import pypyodbc
+from core.core import bot, TIMEOUT, commands, discord, Console
 from core.validators import ContentValidator
 import asyncio
 import data.io as data
@@ -246,34 +247,22 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.event
-async def on_message(msg: discord.Message):
-    # await msg.channel.send([msg.guild, '\n', msg.channel])
-    if msg.author == bot.user:
+@bot.command(brief='add UPC for HS product by SKU')
+async def upc(ctx: commands.Context, sku: str):
+    if ctx.guild.name != 'HSITtesting' and ctx.channel != 'restocks' and ctx.author != bot.user:
         return
-    if msg.guild.name != 'HSITtesting' and msg.channel != 'restocks':
-        return
-    # try:
-    await msg.channel.send('test')
-    # out = []
-    img_exts = ['png', 'jpg', 'gif', 'jpeg']
-    img_fp = ''
-    for att in msg.attachments:
-        if any(att.filename.lower().endswith(ext) for ext in img_exts):
-            img_fp = att.filename
-            await att.save(img_fp)
-            await msg.channel.send('huzzah', file=discord.File(img_fp))
-    try:
-        # img_url
-        await msg.channel.send(pytesseract.image_to_string(Image.open(img_fp)))
-        # print(pytesseract.image_to_string('test.jpg', timeout=15))  # Timeout after 2 seconds
-        # print(pytesseract.image_to_string('test.jpg', timeout=0.5))  # Timeout after half a second
-    except RuntimeError as timeout_error:
-        # Tesseract processing is terminated
-        await msg.channel.send(f'error processing: {msg.content}')
-        # pass
-    # except:
-    #     return
+    await ctx.send('db test commencing....')
+    connection = pypyodbc.connect(
+        f'DRIVER=SQL SERVER;SERVER={os.environ["DS"]};'
+        f'DATABASE=hookahsite;UID={os.environ["DU"]};PWD={os.environ["DP"]}')
+    cursor = connection.cursor()
+    cursor.execute('''select * from customers where lastName = \'cantilo\'''')
+    res = []
+    for r in cursor.fetchall():
+        res.append(r)
+    await ctx.send(res)
+    cursor.close()
+    connection.close()
 
 
 @bot.command(brief='Relive Celery Man',
