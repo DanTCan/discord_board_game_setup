@@ -332,3 +332,4 @@ async def computer(ctx: commands.Context, *, arg: str):
 
 if __name__ == '__main__':
     bot.run(os.environ['BOT_TOKEN'])
+    client.run(os.environ['BOT_TOKEN'])
