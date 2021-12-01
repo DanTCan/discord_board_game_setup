@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, Console
+from core.core import bot, TIMEOUT, commands, discord, Console, client
 from core.validators import ContentValidator
 import asyncio
 import data.io as data
@@ -246,18 +246,19 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.event
+@client.event
 async def sku_process(msg: discord.Message):
+    await msg.channel.send(msg.guild, '\n', msg.channel)
     if msg.guild.name != 'HSITtesting' and msg.channel != 'restocks':
         return
     # try:
+    await msg.channel.send('test')
     out = []
     for m in msg.attachments:
         out.append(m)
     await msg.channel.send(out)
     # except:
     #     return
-
 
 
 @bot.command(brief='Relive Celery Man',
