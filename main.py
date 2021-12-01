@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, Console, pytesseract  # , client
+from core.core import bot, TIMEOUT, commands, discord, Console, pytesseract, Image  # , client
 from core.validators import ContentValidator
 import asyncio
 import data.io as data
@@ -257,13 +257,15 @@ async def on_message(msg: discord.Message):
     await msg.channel.send('test')
     # out = []
     img_exts = ['png', 'jpg', 'gif', 'jpeg']
+    img_fp = ''
     for att in msg.attachments:
         if any(att.filename.lower().endswith(ext) for ext in img_exts):
-            await att.save(att.filename)
-            await msg.channel.send('huzzah', file=discord.File(att.filename))
+            img_fp = att.filename
+            await att.save(img_fp)
+            await msg.channel.send('huzzah', file=discord.File(img_fp))
     try:
         # img_url
-        await msg.channel.send(pytesseract.image_to_string(msg.attachments[0]))
+        await msg.channel.send(pytesseract.image_to_string(Image.open(img_fp)))
         # print(pytesseract.image_to_string('test.jpg', timeout=15))  # Timeout after 2 seconds
         # print(pytesseract.image_to_string('test.jpg', timeout=0.5))  # Timeout after half a second
     except RuntimeError as timeout_error:
