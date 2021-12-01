@@ -248,7 +248,7 @@ async def meow(ctx: commands.Context):
 
 @bot.event
 async def on_message(msg: discord.Message):
-    await msg.channel.send(msg.guild, '\n', msg.channel)
+    await msg.channel.send([msg.guild, '\n', msg.channel])
     if msg.guild.name != 'HSITtesting' and msg.channel != 'restocks':
         return
     # try:
