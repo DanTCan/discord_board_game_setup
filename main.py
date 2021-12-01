@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from core.core import bot, TIMEOUT, commands, discord, Console, client
+from core.core import bot, TIMEOUT, commands, discord, Console  # , client
 from core.validators import ContentValidator
 import asyncio
 import data.io as data

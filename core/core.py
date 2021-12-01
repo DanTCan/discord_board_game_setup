@@ -12,7 +12,7 @@ intents.presences = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 TIMEOUT = '**Timed Out**'
 
-client = discord.Client()
+# client = discord.Client()
 
 
 class Console:
