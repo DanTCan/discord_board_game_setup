@@ -1,7 +1,7 @@
 import os
 import random
 import string
-import pypyodbc
+import pyodbc
 from core.core import bot, TIMEOUT, commands, discord, Console
 from core.validators import ContentValidator
 import asyncio
@@ -252,7 +252,7 @@ async def upc(ctx: commands.Context, sku: str):
     if ctx.guild.name != 'HSITtesting' and ctx.channel != 'restocks' and ctx.author != bot.user:
         return
     await ctx.send('db test commencing....')
-    connection = pypyodbc.connect(
+    connection = pyodbc.connect(
         f'DRIVER=SQL SERVER;SERVER={os.environ["DS"]};'
         f'DATABASE=hookahsite;UID={os.environ["DU"]};PWD={os.environ["DP"]}')
     cursor = connection.cursor()
