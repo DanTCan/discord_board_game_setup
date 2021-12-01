@@ -7,3 +7,5 @@ idna==3.3
 multidict==5.2.0
 typing-extensions==3.10.0.2
 yarl==1.7.2
+pillow==8.4.0
+pytesseract==0.3.8

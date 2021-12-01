@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+try:
+    from PIL import Image
+except ImportError:
+    import Image
+import pytesseract
 
 intents = discord.Intents.default()
 intents.members = True

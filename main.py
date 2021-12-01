@@ -37,8 +37,8 @@ async def setup(ctx: commands.Context):
 
     console.add('Let\'s set up a game!')
     if len(data.games_cache) > 0:
-        console.add('Type *lib* to see the library of existing game profiles.')
-    console.add('Type *new* to create a new game profile.')
+        console.add('Type *lib* to see the library of existing game profiles.', bold=False)
+    console.add('Type *new* to create a new game profile.', bold=False)
     await console.send()
 
     this_game = None
@@ -244,6 +244,18 @@ async def meow(ctx: commands.Context):
     with open(os.path.join('static', 'crackbrie.jpg'), 'rb') as f:
         pic = discord.File(f)
         await ctx.send(file=pic)
+
+
+@bot.event
+async def sku_process(msg: discord.Message):
+    if msg.guild.name != 'HSITesting' and msg.channel != 'restocks':
+        return
+    try:
+        for m in msg.attachments:
+            print(m)
+    except:
+        return
+
 
 
 @bot.command(brief='Relive Celery Man',
