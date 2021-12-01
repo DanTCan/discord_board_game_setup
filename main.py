@@ -248,13 +248,15 @@ async def meow(ctx: commands.Context):
 
 @bot.event
 async def sku_process(msg: discord.Message):
-    if msg.guild.name != 'HSITesting' and msg.channel != 'restocks':
+    if msg.guild.name != 'HSITtesting' and msg.channel != 'restocks':
         return
-    try:
-        for m in msg.attachments:
-            print(m)
-    except:
-        return
+    # try:
+    out = []
+    for m in msg.attachments:
+        out.append(m)
+    await msg.channel.send(out)
+    # except:
+    #     return
 
 
 
