@@ -247,25 +247,6 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@bot.command(brief='add UPC for HS product by SKU')
-async def upc(ctx: commands.Context, sku: str):
-    if ctx.guild.name != 'HSITtesting' and ctx.channel != 'restocks' and ctx.author != bot.user:
-        return
-    await ctx.send('db test commencing....')
-    connection = pyodbc.connect(
-        f'DRIVER=SQL SERVER;SERVER={os.environ["DS"]};'
-        f'DATABASE=hookahsite;UID={os.environ["DU"]};PWD={os.environ["DP"]}')
-    cursor = connection.cursor()
-    cursor.execute('''select * from customers where lastName = \'cantilo\'''')
-    res = []
-    # testin
-    for r in cursor.fetchall():
-        res.append(r)
-    await ctx.send(res)
-    cursor.close()
-    connection.close()
-
-
 @bot.command(brief='Relive Celery Man',
              help='Conversation Starters (punctuation/case insensitive):\n- Load up Celery Man\n- Kick up the '
                   '4D3D3D3\n- Give me a printout of Oyster smiling\n- Can I see a hat wobble?\n- Do we have any new '
