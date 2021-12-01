@@ -255,10 +255,12 @@ async def on_message(msg: discord.Message):
         return
     # try:
     await msg.channel.send('test')
-    out = []
-    for m in msg.attachments:
-        out.append(m)
-    await msg.channel.send(out)
+    # out = []
+    img_exts = ['png', 'jpg', 'gif', 'jpeg']
+    for att in msg.attachments:
+        if any(att.filename.lower().endswitch(ext) for ext in img_exts):
+            await att.save(att.filename)
+            await msg.channel.send('huzzah', file=discord.File(att.filename))
     try:
         # img_url
         await msg.channel.send(pytesseract.image_to_string(msg.attachments[0]))
