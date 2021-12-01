@@ -246,7 +246,7 @@ async def meow(ctx: commands.Context):
         await ctx.send(file=pic)
 
 
-@client.event
+@bot.event
 async def on_message(msg: discord.Message):
     await msg.channel.send(msg.guild, '\n', msg.channel)
     if msg.guild.name != 'HSITtesting' and msg.channel != 'restocks':
@@ -332,4 +332,4 @@ async def computer(ctx: commands.Context, *, arg: str):
 
 if __name__ == '__main__':
     bot.run(os.environ['BOT_TOKEN'])
-    client.run(os.environ['BOT_TOKEN'])
+    # client.run(os.environ['BOT_TOKEN'])
