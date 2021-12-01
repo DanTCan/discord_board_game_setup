@@ -258,6 +258,7 @@ async def upc(ctx: commands.Context, sku: str):
     cursor = connection.cursor()
     cursor.execute('''select * from customers where lastName = \'cantilo\'''')
     res = []
+    # testin
     for r in cursor.fetchall():
         res.append(r)
     await ctx.send(res)
