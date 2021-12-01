@@ -258,7 +258,7 @@ async def on_message(msg: discord.Message):
     # out = []
     img_exts = ['png', 'jpg', 'gif', 'jpeg']
     for att in msg.attachments:
-        if any(att.filename.lower().endswitch(ext) for ext in img_exts):
+        if any(att.filename.lower().endswith(ext) for ext in img_exts):
             await att.save(att.filename)
             await msg.channel.send('huzzah', file=discord.File(att.filename))
     try:
